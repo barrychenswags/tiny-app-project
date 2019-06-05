@@ -20,7 +20,7 @@ function generateRandomString() {
   return randomString;
 }
 
-console.log(generateRandomString);
+console.log(generateRandomString());
 
 /*app.get("/", (req, res) => {
   res.send("Hello!");
@@ -44,6 +44,12 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase /* What goes here? */ };
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  //Object.values(urlDatabase)[0];
+  res.redirect(longURL);
 });
 
 
