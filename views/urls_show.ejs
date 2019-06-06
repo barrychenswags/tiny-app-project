@@ -13,18 +13,20 @@
 <body style="font-size:20px; padding:50px;">
     <!-- Add EJS code here -->
     <h1> TinyApp </h1>
-      Create New TinyURL
-      <br> </br>
 
-      <% for (var url in longURL) { %>
-        <%if (url === shortURL) { %>
-          <h2> TinyURL for <%= longURL[url] %> </h2>
-        <% } %>
+      <h2>
+      ShortURL: <%=  shortURL %>
+      </h2>
 
-      <% } %>
+      <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
+        <div>
+          <input class="form-control" type="text" name="newURL" style="width: 300px; margin: 1em">
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
 
 
-      <%=  shortURL %>
+
 
 </body>
 </html>

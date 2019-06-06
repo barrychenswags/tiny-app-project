@@ -22,7 +22,16 @@
 
       <li>
         <b> <%= prop %>: </b>
-        <%= urls[prop] %>
+        <a href="/u/<%= prop %>">
+          <%= urls[prop] %>
+        </a>
+        <div>
+        <a href="/urls/<%= prop %>"> Edit</a>
+        <form method="POST" action="/urls/<%= prop %>/delete">
+          <button type="submit" class="btn btn-primary">Delete</button>
+        </form>
+        </div>
+
       </li>
 
 <% } %>

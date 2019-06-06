@@ -20,8 +20,6 @@ function generateRandomString() {
   return randomString;
 }
 
-console.log(generateRandomString());
-
 /*app.get("/", (req, res) => {
   res.send("Hello!");
 });*/
@@ -38,7 +36,16 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  const {longURL} = req.body;
+
+  const short = generateRandomString();
+
+  // create a new quote object
+  urlDatabase[short] = longURL;
+
+  // redirecting to the urls page
+  res.redirect('/urls');
+
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -52,7 +59,25 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post('/urls/:shortURL/delete', (req, res) => {
+  // extract the id info from the path
+  const {shortURL} = req.params;
+  // const id = req.params.id;
 
+  delete urlDatabase[shortURL];
+
+  res.redirect('/urls');
+});
+
+app.post('/urls/:shortURL', (req, res) => {
+
+  const {shortURL} = req.params;
+  const {newURL} = req.body;
+
+  urlDatabase[shortURL] = newURL;
+
+  res.redirect('/urls');
+});
 
 /*
 app.get("/new", (req, res) => {
