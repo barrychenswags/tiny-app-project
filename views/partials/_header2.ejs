@@ -9,9 +9,15 @@
     <title>TinyApp</title>
     <h1>TinyApp</h1>
 
-    <a href="/login"> Login</a>
+    <a href="/urls"> URLs </a>
     |
-    <a href="/register"> Register</a>
+    <a href="/urls/new"> Create New TinyURL </a>
+
+    <div> Logged in as: <%= uniqueId %> </div>
+
+    <form method="POST" action="/logout">
+          <button type="submit" class="btn btn-primary">Logout</button>
+    </form>
 
 
   </head>

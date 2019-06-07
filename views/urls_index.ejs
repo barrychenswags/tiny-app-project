@@ -1,21 +1,9 @@
 
-<% include ./partials/_header %>
+<% include ./partials/_header2 %>
 
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
-</head>
-<body style="font-size:20px; padding:50px;">
-    <!-- Add EJS code here -->
-    <h1> TinyApp </h1>
+      <h2> My URLs </h2>
       <a href="/urls/new">Create New TinyURL </a>
       <br> </br>
-      <h2> My URLs </h2>
 
     <!-- %= Object.keys(urls) %-->
     <% for (var prop in urls) { %>
@@ -25,7 +13,7 @@
         <a href="/u/<%= prop %>">
           <%= urls[prop] %>
         </a>
-        <div>
+        <div class="form-inline" >
         <a href="/urls/<%= prop %>"> Edit</a>
         <form method="POST" action="/urls/<%= prop %>/delete">
           <button type="submit" class="btn btn-primary">Delete</button>
