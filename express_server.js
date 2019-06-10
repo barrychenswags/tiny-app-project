@@ -86,6 +86,17 @@ function urlsForUser(ID){
   return userUrls;
 }
 
+app.get("/", (req, res) => {
+
+  if(req.session.uniqueId===undefined){
+    res.redirect('/login');
+  }
+  else{
+    res.redirect('/urls');
+  }
+
+});
+
 app.get("/urls", (req, res) => {
 
   let templateVars = {
