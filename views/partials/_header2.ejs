@@ -11,9 +11,19 @@
     <title>TinyApp</title>
     <h1>TinyApp</h1>
 
-    <a href="/urls"> URLs </a>
-    |
-    <a href="/urls/new"> Create New TinyURL </a>
+    <% if(currentPath === "/urls/new"){ %>
+      <a href="/urls"> URLs</a>
+      |
+      <b>Create New TinyURL</b>
+    <% }else if(currentPath === "/urls"){ %>
+      <b>URLs</b>
+      |
+      <a href="/urls/new"> Create New TinyURL</a>
+    <% }else{ %>
+      <a href="/urls"> URLs</a>
+      |
+      <a href="/urls/new"> Create New TinyURL</a>
+    <% } %>
 
     <div> Logged in as: <%= currentUser.email %> </div>
 

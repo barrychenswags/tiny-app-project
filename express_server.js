@@ -69,7 +69,6 @@ function authenticateUser(em, pw) {
 
 function emailCheck(em){
   for(var user in usersDatabase){
-    console.log(usersDatabase[user].email);
     if (usersDatabase[user].email === em){
       return true;
     }
@@ -88,18 +87,22 @@ function urlsForUser(ID){
 }
 
 app.get("/urls", (req, res) => {
-  console.log(req.session.uniqueId);
+
   let templateVars = {
     urls: urlsForUser(req.session["uniqueId"]),
     uniqueId: req.session["uniqueId"],
-    currentUser: usersDatabase[req.session["uniqueId"]]
+    currentUser: usersDatabase[req.session["uniqueId"]],
+    currentPath: req._parsedOriginalUrl.path
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/register", (req, res) => {
   if(req.session.uniqueId===undefined){
-    res.render("urls_register");
+    let templateVars = {
+      currentPath: req._parsedOriginalUrl.path
+    };
+    res.render("urls_register", templateVars);
   }
   else{
       res.send('Already logged in, to register please logout first');
@@ -110,8 +113,18 @@ app.post('/register', (req, res) => {
 
   const userEmail = req.body.email;
   const userPassword = req.body.password;
+  const confirmPassword = req.body.cpassword;
 
-  if(userEmail.includes('@')===true){
+  if(userEmail=== '' || userPassword=== ''){
+    res.send('Email or password cannot be empty');
+  }
+  else if(userEmail.includes('@')===false){
+    res.send('Incorrect email format, must include @');
+  }
+  else if(userPassword !== confirmPassword){
+    res.send('Both password has to be the same')
+  }
+  else{
     if(emailCheck(userEmail)===false){
       var uniqueId = generateRandomString(5);
 
@@ -132,19 +145,19 @@ app.post('/register', (req, res) => {
       res.redirect('/login');
     }
     else{
-      res.redirect('/register');
+      res.send('An account associated with this email already exists!');
 
     }
-  }
-  else{
-    res.send('Incorrect email format, must include @');
   }
 });
 
 app.get("/login", (req, res) => {
 
   if(req.session.uniqueId===undefined){
-    res.render("urls_login");
+    let templateVars = {
+      currentPath: req._parsedOriginalUrl.path
+    };
+    res.render("urls_login", templateVars);
   }
   else{
       res.send('Already logged in');
@@ -157,22 +170,21 @@ app.post('/login', (req,res) => {
     const authenticate = authenticateUser(req.body.email, req.body.password);
     if(authenticate!== false){
       req.session.uniqueId = authenticate;
-      console.log("login success",req.cookies.uniqueId);
+      console.log("login success",req.session.uniqueId);
       res.redirect('/urls');
     }
     else{
-
-      console.log("login fail",req.cookies.uniqueId);
-      res.redirect('/login');
+      console.log("login fail",req.session.uniqueId);
+      res.send('Fail to login, incorrect email or password!');
     }
 })
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     uniqueId: req.session["uniqueId"],
-    currentUser: usersDatabase[req.session["uniqueId"]]
+    currentUser: usersDatabase[req.session["uniqueId"]],
+    currentPath: req._parsedOriginalUrl.path
   };
-  console.log("the id is ",req.session.uniqueId);
   if(req.session.uniqueId === undefined){
     res.redirect('/login');
   }
@@ -200,7 +212,6 @@ app.post("/urls", (req, res) => {
     id: urlId
   }
 
-  console.log(newLink);
   urlDatabase[short] = newLink;
 
   //after successfully adding new url redirect to the urls page
@@ -216,13 +227,16 @@ app.get("/urls/:shortURL", (req, res) => {
       shortURL: req.params.shortURL,
       longURL: urlsForUser(req.session.uniqueId),
       uniqueId: req.session.uniqueId,
-      currentUser: usersDatabase[req.session["uniqueId"]]
+      currentUser: usersDatabase[req.session["uniqueId"]],
+      currentPath: req._parsedOriginalUrl.path
     };
     res.render("urls_show", templateVars);
   }
+  else if (Object.keys(urlDatabase).includes(req.params.shortURL) === true){
+    res.send("Do not have access to this URL!");
+  }
   else{
-    res.send("Do not have access to this URL");
-
+    res.send("This URL does not exist!");
   }
 });
 
@@ -250,7 +264,6 @@ app.post('/urls/:shortURL', (req, res) => {
 
   const {shortURL} = req.params;
   const {newURL} = req.body;
-  console.log(newURL);
 
   urlDatabase[shortURL].link = newURL;
 

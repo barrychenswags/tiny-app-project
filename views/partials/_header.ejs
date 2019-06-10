@@ -8,11 +8,19 @@
 
     <title>TinyApp</title>
     <h1>TinyApp</h1>
-
-    <a href="/login"> Login</a>
-    |
-    <a href="/register"> Register</a>
-
+      <% if(currentPath === "/register"){ %>
+      <a href="/login"> Login</a>
+      |
+      <b>Register</b>
+      <% }else if(currentPath === "/login"){ %>
+      <b>Login</b>
+      |
+      <a href="/register"> Register</a>
+      <% }else{ %>
+      <a href="/login"> Login</a>
+      |
+      <a href="/register"> Register</a>
+      <% } %>
 
   </head>
 
