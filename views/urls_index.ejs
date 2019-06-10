@@ -1,9 +1,9 @@
-
-<% include ./partials/_header2 %>
-
-      <h2> My URLs </h2>
-      <a href="/urls/new">Create New TinyURL </a>
-      <br> </br>
+<% if(uniqueId === undefined){ %>
+  <% include ./partials/_header %>
+<% }else{ %>
+  <% include ./partials/_header2 %>
+<% } %>
+      <h2> URLs: </h2>
 
     <!-- %= Object.keys(urls) %-->
     <% for (var prop in urls) { %>
@@ -11,14 +11,16 @@
       <li>
         <b> <%= prop %>: </b>
         <a href="/u/<%= prop %>">
-          <%= urls[prop] %>
+          <%= urls[prop].link %>
         </a>
-        <div class="form-inline" >
-        <a href="/urls/<%= prop %>"> Edit</a>
-        <form method="POST" action="/urls/<%= prop %>/delete">
-          <button type="submit" class="btn btn-primary">Delete</button>
-        </form>
-        </div>
+
+          <div class="url-index" >
+          <a href="/urls/<%= prop %>"> Edit</a>
+          <form method="POST" action="/urls/<%= prop %>/delete">
+            <button type="submit" class="btn btn-primary">Delete</button>
+          </form>
+          </div>
+
 
       </li>
 
