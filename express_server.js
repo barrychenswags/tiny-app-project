@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var app = express();
 var flash = require('express-flash-messages');
 var cookieSession = require('cookie-session');
-
+const bcrypt = require('bcrypt');
 
 var PORT = 8080; // default port 8080
 
@@ -32,17 +32,17 @@ const usersDatabase = {
   "Tml34": {
     id: "Tml34",
     email: "mclovin69@gmail.com",
-    password: "iammclovin"
+    password: bcrypt.hashSync("iammclovin", 10)
   },
   "DaB87": {
     id: "DaB87",
     email: "postmalone@hotmail.com",
-    password: "alwaystired"
+    password: bcrypt.hashSync("alwaystired", 10)
   },
   "Hbo20": {
     id: "Hbo20",
     email: "jonsnow@got.com",
-    password: "bastard"
+    password: bcrypt.hashSync("bastard", 10)
   }
 
 };
@@ -60,7 +60,7 @@ function authenticateUser(em, pw) {
 
     for (userId in usersDatabase) {
         let currentUser = usersDatabase[userId];
-        if (currentUser.email === em && currentUser.password === pw) {
+        if (currentUser.email === em && bcrypt.compareSync(pw,currentUser.password.toString()) === true) {
             return currentUser.id;
         }
     }
@@ -88,7 +88,7 @@ function urlsForUser(ID){
 
 app.get("/", (req, res) => {
 
-  if(req.session.uniqueId===undefined){
+  if(req.session.uniqueId === undefined){
     res.redirect('/login');
   }
   else{
@@ -109,7 +109,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  if(req.session.uniqueId===undefined){
+  if(req.session.uniqueId === undefined){
     let templateVars = {
       currentPath: req._parsedOriginalUrl.path
     };
@@ -126,30 +126,32 @@ app.post('/register', (req, res) => {
   const userPassword = req.body.password;
   const confirmPassword = req.body.cpassword;
 
-  if(userEmail=== '' || userPassword=== ''){
+  if(userEmail === '' || userPassword === ''){
     res.send('Email or password cannot be empty');
   }
-  else if(userEmail.includes('@')===false){
+  else if(userEmail.includes('@') === false){
     res.send('Incorrect email format, must include @');
   }
   else if(userPassword !== confirmPassword){
-    res.send('Both password has to be the same')
+    res.send('Both password has to be the same');
   }
   else{
-    if(emailCheck(userEmail)===false){
+    if(emailCheck(userEmail) === false){
       var uniqueId = generateRandomString(5);
 
       /*this method checks whether the generated random ID already exists in the database.
       If so, generate a new one */
-      while(Object.keys(usersDatabase).includes(uniqueId)===true){
+      while(Object.keys(usersDatabase).includes(uniqueId) === true){
         uniqueId = generateRandomString(5);
       }
 
       const newUser = {
         id: uniqueId,
         email: userEmail,
-        password: userPassword
+        password: bcrypt.hashSync(userPassword, 10) //encrypt password using bcrypt
       };
+
+      console.log(newUser.password);
 
       usersDatabase[newUser.id] = newUser;
       //if user successfully registered direct to login page
@@ -164,7 +166,7 @@ app.post('/register', (req, res) => {
 
 app.get("/login", (req, res) => {
 
-  if(req.session.uniqueId===undefined){
+  if(req.session.uniqueId === undefined){
     let templateVars = {
       currentPath: req._parsedOriginalUrl.path
     };
@@ -179,7 +181,7 @@ app.get("/login", (req, res) => {
 app.post('/login', (req,res) => {
 
     const authenticate = authenticateUser(req.body.email, req.body.password);
-    if(authenticate!== false){
+    if(authenticate !== false){
       req.session.uniqueId = authenticate;
       console.log("login success",req.session.uniqueId);
       res.redirect('/urls');
@@ -204,15 +206,12 @@ app.get("/urls/new", (req, res) => {
 
 //ADD URL METHOD
 app.post("/urls", (req, res) => {
-  var {longURL} = req.body;
-  if (longURL.includes('http://')===false){
-    longURL = 'http://'+longURL;
-  }
 
+  var {longURL} = req.body;
   var short = generateRandomString(6);
 
   //this method makes sure all 'short' are unique
-  while(Object.keys(urlDatabase).includes(short)===true){
+  while(Object.keys(urlDatabase).includes(short) === true){
         short = generateRandomString(6);
   }
 
